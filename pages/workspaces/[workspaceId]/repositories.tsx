@@ -40,14 +40,19 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     throw new Error(`Error loading workspaces page with ID ${workspaceId}`);
   }
 
-  return { props: { workspace: data } };
+  const canEditWorkspace =
+    session?.user &&
+    data?.members.find((member) => member.id === session.user.id && ["editor", "owner"].includes(member.role));
+
+  return { props: { workspace: data, canEditWorkspace } };
 };
 
 interface WorkspaceDashboardProps {
   workspace: Workspace;
+  canEditWorkspace: boolean;
 }
 
-const WorkspaceDashboard = ({ workspace }: WorkspaceDashboardProps) => {
+const WorkspaceDashboard = ({ workspace, canEditWorkspace }: WorkspaceDashboardProps) => {
   const router = useRouter();
   const range = router.query.range ? Number(router.query.range as string) : 30;
   const { data, error: hasError } = useGetWorkspaceRepositories({ workspaceId: workspace.id, range });
@@ -56,7 +61,7 @@ const WorkspaceDashboard = ({ workspace }: WorkspaceDashboardProps) => {
   const { data: stats, isError: isStatsError, isLoading: isLoadingStats } = useWorkspacesRepoStats(workspace.id, range);
 
   return (
-    <WorkspaceLayout workspaceId={workspace.id}>
+    <WorkspaceLayout workspaceId={workspace.id} canEditWorkspace={canEditWorkspace}>
       <WorkspaceHeader workspace={workspace} />
       <div className="grid sm:flex gap-4 pt-3">
         <WorkspacesTabList workspaceId={workspace.id} selectedTab={"repositories"} />

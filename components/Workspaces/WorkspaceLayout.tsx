@@ -10,10 +10,11 @@ import Footer from "components/organisms/Footer/footer";
 
 interface WorkspaceLayoutProps {
   workspaceId: string;
+  canEditWorkspace: boolean;
   children: React.ReactNode;
 }
 
-export const WorkspaceLayout = ({ workspaceId, children }: WorkspaceLayoutProps) => {
+export const WorkspaceLayout = ({ workspaceId, canEditWorkspace, children }: WorkspaceLayoutProps) => {
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   const [showingSidebar, setShowingSidebar] = useLocalStorage("showingSidebar", isLargeScreen);
   const hideSidebar = () => setShowingSidebar(false);
@@ -48,7 +49,12 @@ export const WorkspaceLayout = ({ workspaceId, children }: WorkspaceLayoutProps)
         <TopNav />
         <ClientOnly>
           <span ref={sidebarRef}>
-            <AppSideBar workspaceId={workspaceId} hideSidebar={hideSidebar} sidebarCollapsed={showingSidebar} />
+            <AppSideBar
+              workspaceId={workspaceId}
+              hideSidebar={hideSidebar}
+              sidebarCollapsed={showingSidebar}
+              canEditWorkspace={canEditWorkspace}
+            />
           </span>
           {!showingSidebar && (
             <button
