@@ -47,6 +47,8 @@ const loadSession = async (request: NextRequest, sessionToken?: string) => {
 };
 
 export async function middleware(req: NextRequest) {
+  // eslint-disable-next-line no-console
+  console.log("middleware", req.nextUrl.pathname);
   const res = NextResponse.next();
 
   if (!pathsToMatch.some((matcher) => pathToRegexp(matcher).test(req.nextUrl.pathname))) {
